@@ -26,7 +26,7 @@
       git clone https://github.com/Youlanjie/cgame3.git
       ```
 
-    - 或者从[这里](https://github.com/YouLanjie/cgame3/archive/refs/heads/main.zip)下载压缩包并解压
+    - 或者从[这里](https://github.com/YouLanjie/cgame3/archive/refs/heads/master.zip)下载压缩包并解压
     - 再或者直接复制源代码，如果这样注意一定要复制include里的文件
   - 编译
     - 使用make自动编译：
