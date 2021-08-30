@@ -1,63 +1,127 @@
 #include "../include/head.h"
-#include <stdio.h>
+#include <time.h>
 
 void Game() {
-	struct Snake * pHead = NULL, * pNew = NULL, * pEnd = NULL;
+	struct Snake * pHead = NULL, * pNew = NULL, * pEnd = NULL, * pFood = NULL;
 	struct winsize size;
 	short way = Up, way2= Up;
 	int Long = 4;
+	FILE * fp;
 
-	printf("暂未开发\n");
-	Input();
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
 	pHead = pNew = pEnd = (struct Snake *)malloc(sizeof(struct Snake));
-	pNew -> size[0] = (size.ws_col / 2);
-	pNew -> size[1] = (size.ws_row / 2);
+	pNew -> size[0] = size.ws_col / 2;
+	pNew -> size[1] = size.ws_row / 2;
 	for (int i = 1; i < 4; i++) {
-		pNew = (struct Snake *)malloc(sizeof(struct Snake));
-		pNew -> size[0] = (size.ws_col / 2);
-		pNew -> size[1] = (size.ws_row / 2 + i);
-		pEnd -> pNext = pNew;
 		pEnd = pNew;
+		pNew = (struct Snake *)malloc(sizeof(struct Snake));
+		pNew -> size[0] = size.ws_col / 2;
+		pNew -> size[1] = size.ws_row / 2 + i;
+		pEnd -> pNext = pNew;
 	}
+	if (pFood == NULL) {
+		pFood = (struct Snake *)malloc(sizeof(struct Snake));
+		srand(time(NULL));
+		pFood -> size[0] = rand() % size.ws_col + 1;
+		pFood -> size[1] = rand() % size.ws_row + 1;
+		pNew -> pNext = pFood;
+	}
+	Clear2
 	while(1) {
-		Clear2
+		ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
+		
+		Clear
 		KbhitNoTime();
-		pNew = pHead;
-		if(pNew -> size[0] < 0 || pNew -> size[1] < 0) {
-			printf("error!!!!!!\n");
-			Input();
-			return;
+		if (pHead -> size[0] == pFood -> size[0] && pHead -> size[1] == pFood -> size[1]) {
+			Long++;
+			if (way == Up) {
+				pFood -> size[0] = pHead -> size[0];
+				pFood -> size[1] = pHead -> size[1] - 1;
+			}
+			else if (way == Down) {
+				pFood -> size[0] = pHead -> size[0];
+				pFood -> size[1] = pHead -> size[1] + 1;
+			}
+			else if (way == Left) {
+				pFood -> size[0] = pHead -> size[0] - 1;
+				pFood -> size[1] = pHead -> size[1];
+			}
+			else if (way == Right) {
+				pFood -> size[0] = pHead -> size[0] + 1;
+				pFood -> size[1] = pHead -> size[1];
+			}
+			pEnd -> pNext = NULL;
+			pFood -> pNext = pHead;
+			pHead = pFood;
+			pFood = NULL;
 		}
-		for (int i = 0; i < Long; i++) {
-			if (i == 0) {
-				printf("\033[%d;%dH@", pNew -> size[1], pNew -> size[0]);
+		if (pFood == NULL) {
+			pFood = (struct Snake *)malloc(sizeof(struct Snake));
+			srand(time(NULL));
+			pFood -> size[0] = rand() % size.ws_col + 1;
+			pFood -> size[1] = rand() % size.ws_row + 1;
+			pEnd -> pNext = pFood;
+		}
+		pNew = pHead;
+		printf("\033[%d;%dH\033[1;32m@\033[0m", pNew -> size[1], pNew -> size[0]);
+		if (pNew -> size[0] < 1 || pNew -> size[1] < 1 || pNew -> size[0] > size.ws_col || pNew -> size[1] > size.ws_row) {
+			Clear
+			KbhitNoTime();
+			printf("\033[9;%dH\033[1;31mYou die您已死亡\033[0m\n",size.ws_col / 2 - 7);
+			Menu2(" ");
+			Input();
+			free(pHead);
+			break;
+		}
+		pEnd = pNew;
+		pNew = pNew -> pNext;
+		for (int i = 1; i < Long; i++) {
+			printf("\033[%d;%dH\033[1;33m#\033[0m", pNew -> size[1], pNew -> size[0]);
+			if (pNew -> size[0] == pHead -> size[0] && pNew -> size[1] == pHead -> size[1]) {
+				Clear
+				KbhitNoTime();
+				printf("\033[9;%dH\033[1;31mYou die您已死亡\033[0m\n",size.ws_col / 2 - 7);
+				Menu2(" ");
+				Input();
+				free(pHead);
+				break;
 			}
-			else {
-				printf("\033[%d;%dH#", pNew -> size[1], pNew -> size[0]);
-			}
-			printf("\033[s\033[%d;1H%d:\t x:%d\ty:%d\033[u",i + 1, i, pNew -> size[0], pNew -> size[1]);
-			if (pNew -> pNext != NULL) {
+			if (i + 1 < Long) {
 				pEnd = pNew;
 				pNew = pNew -> pNext;
 			}
 		}
+		printf("\033[%d;%dH\033[1;35m%%\033[0m", pNew -> pNext -> size[1], pNew -> pNext -> size[0]);
+		printf("\033[s\033[1;1H分数:%6d\n长度:%6d\033[u", (Long - 4) * 10, Long - 4);
 		KbhitNoTime();
-		// sleep(1);
 		way2 = way;
 		way = 0;
-		for (int i = 0;i <= 250000 && way == 0; i++) {
+		for (int i = 0;i <= 30000 && way == 0; i++) {
 			way = KbhitNoTime();
 		}
 		if (way != 0) {
 			getchar();
-			way = KbhitHas();
-			if (way != 0) {
-				getchar();
-				way = getchar();
+			if (way == 0x1B) {
+				if (KbhitHas() != 0) {
+					getchar();
+					way = getchar();
+				}
+				else {
+					Clear
+					printf("\033[9;%dH\033[1;31m按下Esc\033[0m\n", size.ws_col / 2 - 3);
+					Menu2(" ");
+					Input();
+					free(pHead);
+					break;
+				}
 			}
-			else {
-				return;
+			else if (way == 'q' || way == 'Q') {
+				Clear
+				printf("\033[9;%dH\033[1;31m按下Q\033[0m\n", size.ws_col / 2 - 2);
+				Menu2(" ");
+				Input();
+				free(pHead);
+				break;
 			}
 		}
 		else {
@@ -67,41 +131,78 @@ void Game() {
 		switch (way) {
 			case Up:
 			case 'A':
-				if (way != Down && way != 'B') {
-					pNew -> size[1] = (pHead -> size[1]) - 1;
+				if (way2 != Down && way2 != 'B') {
+					pNew -> size[1] = pHead -> size[1] - 1;
+					pNew -> size[0] = pHead -> size[0];
 					way = Up;
+					way2 = Up;
+				}
+				else {
+					pNew -> size[1] = pHead -> size[1] + 1;
+					pNew -> size[0] = pHead -> size[0];
+					way = Down;
+					way2 = Down;
 				}
 				break;
 			case Down:
 			case 'B':
-				if (way != Up && way != 'A') {
-					pNew -> size[1] = (pHead -> size[1]) + 1;
+				if (way2 != Up && way2 != 'A') {
+					pNew -> size[1] = pHead -> size[1] + 1;
+					pNew -> size[0] = pHead -> size[0];
 					way = Down;
+					way2 = Down;
+				}
+				else {
+					pNew -> size[1] = pHead -> size[1] - 1;
+					pNew -> size[0] = pHead -> size[0];
+					way = Up;
+					way2 = Up;
 				}
 				break;
 			case Left:
 			case 'D':
-				if (way != Right && way != 'C') {
-					pNew -> size[0] = (pHead -> size[0]) - 1;
+				if (way2 != Right && way2 != 'C') {
+					pNew -> size[0] = pHead -> size[0] - 1;
+					pNew -> size[1] = pHead -> size[1];
 					way = Left;
+					way2 = Left;
+				}
+				else {
+					pNew -> size[0] = pHead -> size[0] + 1;
+					pNew -> size[1] = pHead -> size[1];
+					way = Right;
+					way2 = Right;
 				}
 				break;
 			case Right:
 			case 'C':
-				if (way != Left && way != 'D') {
-					pNew -> size[0] = (pHead -> size[0]) + 1;
+				if (way2 != Left && way2 != 'D') {
+					pNew -> size[0] = pHead -> size[0] + 1;
+					pNew -> size[1] = pHead -> size[1];
 					way = Right;
+					way2 = Right;
+				}
+				else {
+					pNew -> size[0] = pHead -> size[0] - 1;
+					pNew -> size[1] = pHead -> size[1];
+					way = Left;
+					way2 = Left;
 				}
 				break;
 			default:
 				pNew -> size[1] = (pHead -> size[1]) - 1;
 				way = way2;
 		}
+		way = way2;
 		pNew -> pNext = pHead;
-		pEnd -> pNext = NULL;
+		pEnd -> pNext = pFood;
 		pHead = pNew;
 	}
-	Input();
-	free(pHead);
+	fp = fopen("top.txt","a");
+	if (fp) {
+		fprintf(fp, "%d %d\n",Long - 4,(Long - 4) * 10);
+		fclose(fp);
+	}
 	return;
 }
+

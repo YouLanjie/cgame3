@@ -35,12 +35,6 @@
       make
       ```
 
-      生成deb软件包并安装:
-
-      ```sh
-      make building && make install
-      ```
-
     - 或者 **进入cgame3/src/** 目录，使用gcc手动编译所有c文件：
 
       ``` sh

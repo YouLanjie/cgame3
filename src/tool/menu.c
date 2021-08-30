@@ -1,4 +1,3 @@
-#include <asm-generic/ioctls.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/ioctl.h>
@@ -9,7 +8,7 @@ void Menu(char title[], short pages, short allPages) {
 	struct winsize size;
 
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
-	printf("\033[2;32m\033[6;%dH↑\033[10;%dH↓\033[11;%dH\033[2;32m%d/%d\033[1;33m", size.ws_col / 2 - 1, size.ws_col / 2 - 1, size.ws_col / 2 + 25, pages,allPages);
+	printf("\033[2;32m\033[6;%dH↑\033[10;%dH↓\033[11;%dH\033[2;32m%d/%d\033[0m", size.ws_col / 2 - 1, size.ws_col / 2 - 1, size.ws_col / 2 + 25, pages,allPages);
 	printf("\033[2;%dH\033[1;32m%s", size.ws_col / 2 - (int)strlen(title) / 2, title);
 	printf("\033[5;%dH\033[1;34m--------------------------------------------------------", size.ws_col / 2 - 27);
 	printf("\033[6;%dH|\033[54C|", size.ws_col / 2 - 27);

@@ -22,14 +22,3 @@ $(prom): $(OBJ)
 clean:
 	@rm -rf $(OBJ) $(BIN) $(prom).deb
 
-building:
-	@rm -r ./deb/$(prom)/usr/local/$(prom)/*
-	@cp -r ./src ./deb/$(prom)/usr/local/$(prom)/
-	@cp -r ./include ./deb/$(prom)/usr/local/$(prom)/
-	dpkg -b ./deb/$(prom) ./$(prom).deb
-
-install:
-	@sudo dpkg -i ./$(prom).deb
-	@rm ./$(prom).deb
-
-

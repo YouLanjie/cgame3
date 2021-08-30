@@ -6,7 +6,7 @@ struct Snake {
 	struct Snake * pNext;
 };
 
-enum Way{Up, Right, Down, Left};
+enum Way{Up = 0, Right, Down, Left};
 
 void Game();
 void Top();
