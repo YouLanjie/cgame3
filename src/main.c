@@ -1,5 +1,4 @@
 #include "../include/head.h"
-#include <stdio.h>
 
 int main() {
 	int inputContent = 1;
@@ -11,9 +10,9 @@ int main() {
 	signal(SIGINT,stop);
 	while (inputContent != 0x1B && inputContent != 0x30 && inputContent != 0x51 && inputContent != 0x71) {
 		ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
-		if (size.ws_col < 56 || size.ws_row < 12) {
+		if (size.ws_col < 56 || size.ws_row < 13) {
 			Clear2
-			printf("终端至少要 56 × 12 那么大，否则会出现问题\033[?25h\n");
+			printf("终端至少要 56 × 13 那么大，否则会出现问题\033[?25h\n");
 			return 1;
 		}
 		startSize = size.ws_col / 2 - 20;
