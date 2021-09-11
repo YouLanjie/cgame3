@@ -19,5 +19,5 @@ $(prom): $(OBJ)
 	$(CC) -c $< -o $@
 
 clean:
-	@rm -rf $(OBJ) $(BIN) $(prom).deb
+	@rm -rf $(OBJ) $(prom).deb
 
