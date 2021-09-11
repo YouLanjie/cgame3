@@ -10,11 +10,10 @@ prom = cgame3
 all: cgame3
 
 $(prom): $(OBJ)
-	@rm -rf $(BIN) $(prom).deb
+	@rm -rf $(BIN)
 	$(CC) $(OBJ) -o $(prom)
 	@mkdir bin
 	@mv $(prom) $(BIN)/main
-	@rm -rf $(OBJ)
 
 %.o: %.c $(incl)
 	$(CC) -c $< -o $@

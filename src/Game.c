@@ -6,6 +6,7 @@ void Game() {
 	struct winsize size;
 	short way = Up, way2= Up;
 	int Long = 4;
+	short BORE = 1;
 	FILE * fp;
 
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
@@ -110,125 +111,131 @@ void Game() {
 			KbhitNoTime();
 			way = way2;
 		}
-		switch (way) {
-			case Up:
-			case 'A':
-				if (way2 != Down && way2 != 'B') {
-					if (pHead -> size[0] == pFood -> size[0] && pHead -> size[1] - 1 == pFood -> size[1]) {
-						pFood -> size[1] = pNew -> size[1];
-						pFood -> size[0] = pNew -> size[0];
-						pEnd -> pNext = pFood;
-						pFood = NULL;
-						Long++;
+		BORE = 1;
+		while (BORE){
+			BORE = 0;
+			switch (way) {
+				case Up:
+				case 'A':
+					if (way2 != Down && way2 != 'B') {
+						if (pHead -> size[0] == pFood -> size[0] && pHead -> size[1] - 1 == pFood -> size[1]) {
+							pFood -> size[1] = pNew -> size[1];
+							pFood -> size[0] = pNew -> size[0];
+							pEnd -> pNext = pFood;
+							pFood = NULL;
+							Long++;
+						}
+						pNew -> size[1] = pHead -> size[1] - 1;
+						pNew -> size[0] = pHead -> size[0];
+						way = Up;
+						way2 = Up;
 					}
-					pNew -> size[1] = pHead -> size[1] - 1;
-					pNew -> size[0] = pHead -> size[0];
-					way = Up;
-					way2 = Up;
-				}
-				else {
-					if (pHead -> size[0] == pFood -> size[0] && pHead -> size[1] + 1 == pFood -> size[1]) {
-						pFood -> size[1] = pNew -> size[1];
-						pFood -> size[0] = pNew -> size[0];
-						pEnd -> pNext = pFood;
-						pFood = NULL;
-						Long++;
+					else {
+						if (pHead -> size[0] == pFood -> size[0] && pHead -> size[1] + 1 == pFood -> size[1]) {
+							pFood -> size[1] = pNew -> size[1];
+							pFood -> size[0] = pNew -> size[0];
+							pEnd -> pNext = pFood;
+							pFood = NULL;
+							Long++;
+						}
+						pNew -> size[1] = pHead -> size[1] + 1;
+						pNew -> size[0] = pHead -> size[0];
+						way = Down;
+						way2 = Down;
 					}
-					pNew -> size[1] = pHead -> size[1] + 1;
-					pNew -> size[0] = pHead -> size[0];
-					way = Down;
-					way2 = Down;
-				}
-				break;
-			case Down:
-			case 'B':
-				if (way2 != Up && way2 != 'A') {
-					if (pHead -> size[0] == pFood -> size[0] && pHead -> size[1] + 1 == pFood -> size[1]) {
-						pFood -> size[1] = pNew -> size[1];
-						pFood -> size[0] = pNew -> size[0];
-						pEnd -> pNext = pFood;
-						pFood = NULL;
-						Long++;
+					break;
+				case Down:
+				case 'B':
+					if (way2 != Up && way2 != 'A') {
+						if (pHead -> size[0] == pFood -> size[0] && pHead -> size[1] + 1 == pFood -> size[1]) {
+							pFood -> size[1] = pNew -> size[1];
+							pFood -> size[0] = pNew -> size[0];
+							pEnd -> pNext = pFood;
+							pFood = NULL;
+							Long++;
+						}
+						pNew -> size[1] = pHead -> size[1] + 1;
+						pNew -> size[0] = pHead -> size[0];
+						way = Down;
+						way2 = Down;
 					}
-					pNew -> size[1] = pHead -> size[1] + 1;
-					pNew -> size[0] = pHead -> size[0];
-					way = Down;
-					way2 = Down;
-				}
-				else {
-					if (pHead -> size[0] == pFood -> size[0] && pHead -> size[1] - 1 == pFood -> size[1]) {
-						pFood -> size[1] = pNew -> size[1];
-						pFood -> size[0] = pNew -> size[0];
-						pEnd -> pNext = pFood;
-						pFood = NULL;
-						Long++;
+					else {
+						if (pHead -> size[0] == pFood -> size[0] && pHead -> size[1] - 1 == pFood -> size[1]) {
+							pFood -> size[1] = pNew -> size[1];
+							pFood -> size[0] = pNew -> size[0];
+							pEnd -> pNext = pFood;
+							pFood = NULL;
+							Long++;
+						}
+						pNew -> size[1] = pHead -> size[1] - 1;
+						pNew -> size[0] = pHead -> size[0];
+						way = Up;
+						way2 = Up;
 					}
-					pNew -> size[1] = pHead -> size[1] - 1;
-					pNew -> size[0] = pHead -> size[0];
-					way = Up;
-					way2 = Up;
-				}
-				break;
-			case Left:
-			case 'D':
-				if (way2 != Right && way2 != 'C') {
-					if (pHead -> size[0] - 1 == pFood -> size[0] && pHead -> size[1] == pFood -> size[1]) {
-						pFood -> size[1] = pNew -> size[1];
-						pFood -> size[0] = pNew -> size[0];
-						pEnd -> pNext = pFood;
-						pFood = NULL;
-						Long++;
+					break;
+				case Left:
+				case 'D':
+					if (way2 != Right && way2 != 'C') {
+						if (pHead -> size[0] - 1 == pFood -> size[0] && pHead -> size[1] == pFood -> size[1]) {
+							pFood -> size[1] = pNew -> size[1];
+							pFood -> size[0] = pNew -> size[0];
+							pEnd -> pNext = pFood;
+							pFood = NULL;
+							Long++;
+						}
+						pNew -> size[0] = pHead -> size[0] - 1;
+						pNew -> size[1] = pHead -> size[1];
+						way = Left;
+						way2 = Left;
 					}
-					pNew -> size[0] = pHead -> size[0] - 1;
-					pNew -> size[1] = pHead -> size[1];
-					way = Left;
-					way2 = Left;
-				}
-				else {
-					if (pHead -> size[0] + 1 == pFood -> size[0] && pHead -> size[1] == pFood -> size[1]) {
-						pFood -> size[1] = pNew -> size[1];
-						pFood -> size[0] = pNew -> size[0];
-						pEnd -> pNext = pFood;
-						pFood = NULL;
-						Long++;
+					else {
+						if (pHead -> size[0] + 1 == pFood -> size[0] && pHead -> size[1] == pFood -> size[1]) {
+							pFood -> size[1] = pNew -> size[1];
+							pFood -> size[0] = pNew -> size[0];
+							pEnd -> pNext = pFood;
+							pFood = NULL;
+							Long++;
+						}
+						pNew -> size[0] = pHead -> size[0] + 1;
+						pNew -> size[1] = pHead -> size[1];
+						way = Right;
+						way2 = Right;
 					}
-					pNew -> size[0] = pHead -> size[0] + 1;
-					pNew -> size[1] = pHead -> size[1];
-					way = Right;
-					way2 = Right;
-				}
-				break;
-			case Right:
-			case 'C':
-				if (way2 != Left && way2 != 'D') {
-					if (pHead -> size[0] + 1 == pFood -> size[0] && pHead -> size[1] == pFood -> size[1]) {
-						pFood -> size[1] = pNew -> size[1];
-						pFood -> size[0] = pNew -> size[0];
-						pEnd -> pNext = pFood;
-						pFood = NULL;
-						Long++;
+					break;
+				case Right:
+				case 'C':
+					if (way2 != Left && way2 != 'D') {
+						if (pHead -> size[0] + 1 == pFood -> size[0] && pHead -> size[1] == pFood -> size[1]) {
+							pFood -> size[1] = pNew -> size[1];
+							pFood -> size[0] = pNew -> size[0];
+							pEnd -> pNext = pFood;
+							pFood = NULL;
+							Long++;
+						}
+						pNew -> size[0] = pHead -> size[0] + 1;
+						pNew -> size[1] = pHead -> size[1];
+						way = Right;
+						way2 = Right;
 					}
-					pNew -> size[0] = pHead -> size[0] + 1;
-					pNew -> size[1] = pHead -> size[1];
-					way = Right;
-					way2 = Right;
-				}
-				else {
-					if (pHead -> size[0] + 1 == pFood -> size[0] && pHead -> size[1] == pFood -> size[1]) {
-						pFood -> size[1] = pNew -> size[1];
-						pFood -> size[0] = pNew -> size[0];
-						pEnd -> pNext = pFood;
-						pFood = NULL;
-						Long++;
+					else {
+						if (pHead -> size[0] + 1 == pFood -> size[0] && pHead -> size[1] == pFood -> size[1]) {
+							pFood -> size[1] = pNew -> size[1];
+							pFood -> size[0] = pNew -> size[0];
+							pEnd -> pNext = pFood;
+							pFood = NULL;
+							Long++;
+						}
+						pNew -> size[0] = pHead -> size[0] - 1;
+						pNew -> size[1] = pHead -> size[1];
+						way = Left;
+						way2 = Left;
 					}
-					pNew -> size[0] = pHead -> size[0] - 1;
-					pNew -> size[1] = pHead -> size[1];
-					way = Left;
-					way2 = Left;
-				}
-				break;
-			default:
-				way = way2;
+					break;
+				default:
+					way = way2;
+					BORE = 1;
+					break;
+			}
 		}
 		way = way2;
 		if (pFood != NULL) {
