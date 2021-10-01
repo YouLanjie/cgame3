@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=贪吃蛇
+Exec=/usr/games/cgame3
+Icon=cgame3.png
+Comment=贪吃蛇小游戏
+Terminal=true
+Type=Application
+

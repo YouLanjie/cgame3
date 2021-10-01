@@ -1,0 +1,16 @@
+Source: cgame3
+Section: games
+Priority: optional
+Maintainer: LanjieYou <ylj18926385312@163.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.5.1
+#Homepage: <insert the upstream URL, if relevant>
+#Vcs-Browser: https://salsa.debian.org/debian/cgame3
+Vcs-Git: https://github.com/youlanjie/cgame3.git
+Rules-Requires-Root: no
+
+Package: cgame3
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: 这是一个开源的用c语言制作的小游戏——贪吃蛇，没有什么用，运行起来可能会有一些卡顿，CPU占用率高。
+ 本程序采用MIT开源协议，欢迎指出错误。

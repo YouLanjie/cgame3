@@ -1,0 +1,4 @@
+res/cgame3.desktop /usr/share/applications
+res/cgame3.png /usr/share/icons
+res/cgame3.6 /usr/share/man/man6
+bin/cgame3 /usr/games

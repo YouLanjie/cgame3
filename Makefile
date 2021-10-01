@@ -13,7 +13,7 @@ $(prom): $(OBJ)
 	@rm -rf $(BIN)
 	$(CC) $(OBJ) -o $(prom)
 	@mkdir bin
-	@mv $(prom) $(BIN)/main
+	@mv $(prom) $(BIN)/cgame3
 
 %.o: %.c $(incl)
 	$(CC) -c $< -o $@
