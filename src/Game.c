@@ -32,7 +32,7 @@ void Game() {
 		ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
 		
 		Clear
-		KbhitNoTime();
+		kbhitGetchar();
 		if (pFood == NULL) {
 			pFood = (struct Snake *)malloc(sizeof(struct Snake));
 			srand(time(NULL));
@@ -45,10 +45,10 @@ void Game() {
 		printf("\033[%d;%dH\033[1;32m@\033[0m", pNew -> size[1], pNew -> size[0]);
 		if (pNew -> size[0] < 1 || pNew -> size[1] < 1 || pNew -> size[0] > size.ws_col || pNew -> size[1] > size.ws_row) {
 			Clear
-			KbhitNoTime();
+			kbhitGetchar();
 			printf("\033[9;%dH\033[1;31mYou die您已死亡\033[0m\n",size.ws_col / 2 - 7);
 			Menu2(" ");
-			Input();
+			getch();
 			free(pHead);
 			break;
 		}
@@ -58,10 +58,10 @@ void Game() {
 			printf("\033[%d;%dH\033[1;33m#\033[0m", pNew -> size[1], pNew -> size[0]);
 			if (pNew -> size[0] == pHead -> size[0] && pNew -> size[1] == pHead -> size[1]) {
 				Clear
-				KbhitNoTime();
+				kbhitGetchar();
 				printf("\033[9;%dH\033[1;31mYou die您已死亡\033[0m\n",size.ws_col / 2 - 7);
 				Menu2(" ");
-				Input();
+				getch();
 				free(pHead);
 				fp = fopen("top.txt","a");
 				if (fp) {
@@ -76,16 +76,16 @@ void Game() {
 			}
 		}
 		printf("\033[%d;%dH\033[1;36m%%\033[0m", pNew -> pNext -> size[1], pNew -> pNext -> size[0]);
-		KbhitNoTime();
+		kbhitGetchar();
 		way2 = way;
 		way = 0;
 		for (int i = 0;i <= 30000 && way == 0; i++) {
-			way = KbhitNoTime();
+			way = kbhitGetchar();
 		}
 		if (way != 0) {
 			getchar();
 			if (way == 0x1B) {
-				if (KbhitHas() != 0) {
+				if (kbhit() != 0) {
 					getchar();
 					way = getchar();
 				}
@@ -93,7 +93,7 @@ void Game() {
 					Clear
 					printf("\033[9;%dH\033[1;31m按下Esc\033[0m\n", size.ws_col / 2 - 3);
 					Menu2(" ");
-					Input();
+					getch();
 					free(pHead);
 					break;
 				}
@@ -102,20 +102,22 @@ void Game() {
 				Clear
 				printf("\033[9;%dH\033[1;31m按下Q\033[0m\n", size.ws_col / 2 - 2);
 				Menu2(" ");
-				Input();
+				getch();
 				free(pHead);
 				break;
 			}
 		}
 		else {
-			KbhitNoTime();
+			kbhitGetchar();
 			way = way2;
 		}
-		BORE = 1;
+		BORE = 1;            //布尔值，仅用于循环判断
 		while (BORE){
 			BORE = 0;
 			switch (way) {
 				case Up:
+				case 'k':
+				case 'w':
 				case 'A':
 					if (way2 != Down && way2 != 'B') {
 						if (pHead -> size[0] == pFood -> size[0] && pHead -> size[1] - 1 == pFood -> size[1]) {
@@ -145,6 +147,8 @@ void Game() {
 					}
 					break;
 				case Down:
+				case 'j':
+				case 's':
 				case 'B':
 					if (way2 != Up && way2 != 'A') {
 						if (pHead -> size[0] == pFood -> size[0] && pHead -> size[1] + 1 == pFood -> size[1]) {
@@ -174,6 +178,8 @@ void Game() {
 					}
 					break;
 				case Left:
+				case 'h':
+				case 'a':
 				case 'D':
 					if (way2 != Right && way2 != 'C') {
 						if (pHead -> size[0] - 1 == pFood -> size[0] && pHead -> size[1] == pFood -> size[1]) {
@@ -203,6 +209,8 @@ void Game() {
 					}
 					break;
 				case Right:
+				case 'l':
+				case 'd':
 				case 'C':
 					if (way2 != Left && way2 != 'D') {
 						if (pHead -> size[0] + 1 == pFood -> size[0] && pHead -> size[1] == pFood -> size[1]) {

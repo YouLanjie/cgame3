@@ -5,13 +5,13 @@ void Top() {
 	unsigned int info[2] = {0, 0};
 	FILE * fp;
 
-	KbhitNoTime();
+	kbhitGetchar();
 	Clear2
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
 	fp = fopen("top.txt","r");
 	if (!fp) {
 		printf("存档不存在");
-		Input();
+		getch();
 		return;
 	}
 	printf("\033[2;%dH\033[1;32m排行榜\n", size.ws_col / 2 - 3);
@@ -22,10 +22,10 @@ void Top() {
 		}
 		else {
 			printf("\033[%dC\033[1;32m|\033[1;33m%6d        %4d\033[1;32m|\033[0m\n", size.ws_col / 2 - 11, info[0], info[1]);
-			KbhitNoTime();
+			kbhitGetchar();
 		}
 	}
 	fclose(fp);
-	Input();
+	getch();
 	return;
 }
