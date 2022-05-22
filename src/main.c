@@ -4,11 +4,17 @@ int main() {
 	int inputContent = 1;
 	struct winsize size;
 	int startSize = 0;
+	char *text[] = {
+		"1.开始游戏",
+		"2.排行榜",
+		"3.游戏帮助",
+		"4.清除记录",
+	};
 
 	printf("\033[?25l");
 	Clear2
 	signal(SIGINT,stop);
-	while (inputContent != 0x1B && inputContent != 0x30 && inputContent != 0x51 && inputContent != 0x71) {
+	while (inputContent != 0x1B && inputContent != '0' && inputContent != 'Q' && inputContent != 'q') {
 		ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
 		if (size.ws_col < 56 || size.ws_row < 13) {
 			Clear2
@@ -16,23 +22,21 @@ int main() {
 			return 1;
 		}
 		startSize = size.ws_col / 2 - 20;
-		printf("\033[8;%dH\033[1;33m1.开始游戏\033[8;%dH2.排行榜\033[9;%dH3.游戏帮助\033[9;%dH4.清除记录\n", startSize, startSize + 32, startSize, startSize + 32);
-		Menu("游戏", 1, 1);
-		inputContent = getch();
+		inputContent = Menu("游戏", text, 4, 2);
 		Clear
 		switch (inputContent) {
-			case 0x31:
+			case '1':
 				Game();
 				break;
-			case 0x32:
+			case '2':
 				Top();
 				break;
-			case 0x33:
+			case '3':
 				printf("\033[9;%dHESC Q 0退出方向键移动\n", startSize + 10);
-				Menu2("帮助");
+				Menu3("帮助");
 				getch();
 				break;
-			case 0x34:
+			case '4':
 				remove("top.txt");
 				break;
 			default:

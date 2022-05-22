@@ -1,12 +1,14 @@
 #include "../include/head.h"
-#include <time.h>
+#include <sys/time.h>
+
+static int GetNowTime();
 
 void Game() {
 	struct Snake * pHead = NULL, * pNew = NULL, * pEnd = NULL, * pFood = NULL;
 	struct winsize size;
-	short way = Up, way2= Up;
+	short way = Up, way2= Up, BORE = 1;
 	int Long = 4;
-	short BORE = 1;
+	long int usec = 0;
 	FILE * fp;
 
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
@@ -47,7 +49,7 @@ void Game() {
 			Clear
 			kbhitGetchar();
 			printf("\033[9;%dH\033[1;31mYou die您已死亡\033[0m\n",size.ws_col / 2 - 7);
-			Menu2(" ");
+			Menu3(" ");
 			getch();
 			free(pHead);
 			break;
@@ -60,7 +62,7 @@ void Game() {
 				Clear
 				kbhitGetchar();
 				printf("\033[9;%dH\033[1;31mYou die您已死亡\033[0m\n",size.ws_col / 2 - 7);
-				Menu2(" ");
+				Menu3(" ");
 				getch();
 				free(pHead);
 				fp = fopen("top.txt","a");
@@ -79,8 +81,10 @@ void Game() {
 		kbhitGetchar();
 		way2 = way;
 		way = 0;
-		for (int i = 0;i <= 30000 && way == 0; i++) {
+		usec = GetNowTime();
+		while (usec + 50000 >= GetNowTime()) {
 			way = kbhitGetchar();
+			system("sleep 0.005");
 		}
 		if (way != 0) {
 			getchar();
@@ -92,7 +96,7 @@ void Game() {
 				else {
 					Clear
 					printf("\033[9;%dH\033[1;31m按下Esc\033[0m\n", size.ws_col / 2 - 3);
-					Menu2(" ");
+					Menu3(" ");
 					getch();
 					free(pHead);
 					break;
@@ -101,7 +105,7 @@ void Game() {
 			else if (way == 'q' || way == 'Q') {
 				Clear
 				printf("\033[9;%dH\033[1;31m按下Q\033[0m\n", size.ws_col / 2 - 2);
-				Menu2(" ");
+				Menu3(" ");
 				getch();
 				free(pHead);
 				break;
@@ -260,3 +264,9 @@ void Game() {
 	return;
 }
 
+static int GetNowTime() {
+	struct timeval time;
+
+	gettimeofday(&time, NULL);
+	return time.tv_usec;
+}
