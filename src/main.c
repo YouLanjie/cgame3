@@ -1,16 +1,41 @@
 #include "../include/head.h"
 
+struct itimerval tick;
+
 int main() {
 	int inputContent = 1;
 	struct winsize size;
 	int startSize = 0;
 	char *text[] = {
 		"1.开始游戏",
-		"2.排行榜",
+		"2.历史记录",
 		"3.游戏帮助",
 		"4.清除记录",
+		"5.游戏设置"
+	};
+	char *help[] = {
+		"1.主界面可以使用WASD或者方向键再或vim键位移动",
+		"  选择的选项，并且按下空格或回车选择对应的选项",
+		"  光标移动到当页尽头后如果还有内容会翻页到下一",
+		"  页，右下角会有当前所在的页数和总页数的提示",
+		"2.游戏界面可以使用同主界面一样的键位移动方向",
+		"3.在游戏中可以使用q退出，或者使用p来暂停。",
+		"4.历史记录只是简单地储存蛇的长度与对应的分数，",
+		"  没有什么特别的，不喜可删",
+		"6.清除记录选项会直接移除保存游戏记录的所有文件",
+		"  这没有什么可怕的，毕竟文件的所有的内容都是明",
+		"  文记录的（长度+分数），而且历史记录能够保存",
+		"  的内容都是极其有限的，功能也很简陋",
+		"5.游戏帮助按下除了移动光标外按键的其他按键应",
+		"  该会退出帮助界面"
 	};
 
+	/* 定时间隔 */
+	tick.it_interval.tv_sec = 0;
+	tick.it_interval.tv_usec = 90000;
+	/* 延迟启动 */
+	tick.it_value.tv_sec = 0;
+	tick.it_value.tv_usec = 100000;
 	printf("\033[?25l");
 	Clear2
 	signal(SIGINT,stop);
@@ -22,22 +47,23 @@ int main() {
 			return 1;
 		}
 		startSize = size.ws_col / 2 - 20;
-		inputContent = Menu("游戏", text, 4, 2);
+		inputContent = Menu("游戏", text, 5, 2);
 		Clear
 		switch (inputContent) {
 			case '1':
 				Game();
 				break;
 			case '2':
-				Top();
+				history();
 				break;
 			case '3':
-				printf("\033[9;%dHESC Q 0退出方向键移动\n", startSize + 10);
-				Menu3("帮助");
-				getch();
+				Menu("帮助", help, 14, 1);
 				break;
 			case '4':
-				remove("top.txt");
+				remove("cgame3_save");
+				break;
+			case '5':
+				Settings();
 				break;
 			default:
 				break;
@@ -50,7 +76,9 @@ int main() {
 }
 
 void stop() {
+	alarm(0);
 	Clear2
 	printf("\033[?25h退出......");
 	exit(0);
 }
+

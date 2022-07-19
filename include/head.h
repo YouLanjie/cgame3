@@ -1,14 +1,18 @@
 #include "include.h"
-#include <sys/ioctl.h>
+#include <sys/time.h>
 
 struct Snake {
-	short size[2];
+	short x;
+	short y;
 	struct Snake * pNext;
 };
 
-enum Way{Up = 49, Right, Down, Left};
+enum Way{Up = 49, Right, Down, Left};    /* int:49 char:'1' */
 
 void Game();
-void Top();
+void history();
+void Settings();
 void stop();
+
+extern struct itimerval tick;
 
