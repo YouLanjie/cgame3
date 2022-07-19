@@ -5,7 +5,8 @@
 - 这是一个c语言写的小游戏
 - 目前才刚开工，还没有什么内容
 - 开发平台:
-  - [x] Ubuntu Linux
+  - [x] Arch Linux
+  - [ ] Ubuntu Linux
   - [ ] Debian Linux
   - [ ] Deepin Linux
 
