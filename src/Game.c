@@ -174,8 +174,8 @@ static struct Snake *mkFood() {
 	while (BORE) {
 		gettimeofday(&gettime, NULL);
 		srand(gettime.tv_usec + time(NULL));    /* 获得随机数种子 */
-		pFood -> x = rand() % (size.ws_col - 6) + 6;
-		pFood -> y = rand() % (size.ws_row - 7) + 6;
+		pFood -> x = rand() % (size.ws_col - 12) + 6;
+		pFood -> y = rand() % (size.ws_row - 12) + 6;
 		pLast = pNext = pHead;
 		pNext = pNext -> pNext;
 		while (pNext -> pNext != NULL) {
