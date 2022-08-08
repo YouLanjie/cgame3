@@ -6,13 +6,7 @@ int main() {
 	int inputContent = 1;
 	struct winsize size;
 	int startSize = 0;
-	char *text[] = {
-		"1.开始游戏",
-		"2.历史记录",
-		"3.游戏帮助",
-		"4.清除记录",
-		"5.游戏设置"
-	};
+	menuData menu;
 	char *help[] = {
 		"1.主界面可以使用WASD或者方向键再或vim键位移动",
 		"  选择的选项，并且按下空格或回车选择对应的选项",
@@ -29,6 +23,11 @@ int main() {
 		"5.游戏帮助按下除了移动光标外按键的其他按键应",
 		"  该会退出帮助界面"
 	};
+
+	menuDataInit(&menu);
+	menu.title = "贪吃蛇游戏";
+	menu.addText(&menu, "1.开始游戏", "2.历史记录", "3.游戏帮助", "4.清除记录", "5.游戏设置", NULL);
+	menu.addTextData(&menu, 0, "%s%s%s%s%s", "开始贪吃蛇游戏", "查看保存着全部的历史记录，使用文本形式(txt)储存", "查看游戏的全部帮助", "这会删除记录文件且无提示，请三思而后行", "设置游戏更新间隔，延迟越大游戏越慢");
 
 	/* 定时间隔 */
 	tick.it_interval.tv_sec = 0;
@@ -47,7 +46,7 @@ int main() {
 			return 1;
 		}
 		startSize = size.ws_col / 2 - 20;
-		inputContent = Menu("游戏", text, 5, 2);
+		inputContent = menu.menuShow(&menu);
 		Clear
 		switch (inputContent) {
 			case '1':

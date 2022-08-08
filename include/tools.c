@@ -1,11 +1,15 @@
+#include "include.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#include <sys/types.h>
 
-/* ===================== 通用 ======================= */
+// ======================================================================================================================================================
+// ======================================================================== 通用 ========================================================================
+// ======================================================================================================================================================
 
-/* ===================== Linux ======================= */
+
+// ======================================================================== Linux =======================================================================
+// ======================================================================================================================================================
+//
 #ifdef __linux
 	#include <termios.h>
 	#include <fcntl.h>
@@ -111,9 +115,13 @@
 		return;
 	}
 #endif
-/* ===================== End ======================= */
 
-/* ===================== Windows ======================= */
+// ======================================================================================================================================================
+// ========================================================================= End ========================================================================
+
+
+// ======================================================================== Windows =====================================================================
+// ======================================================================================================================================================
 #ifdef _WIN32
 	#include <windows.h>
 	#include <conio.h>
@@ -178,6 +186,13 @@
 	}
 #endif
 
+// ======================================================================================================================================================
+// ======================================================================== End =========================================================================
+
+
+// ======================================================================== Def =========================================================================
+// ======================================================================================================================================================
+
 #ifdef __linux
 	#ifndef Clear
 		#define Clear printf("\033[2J\033[1;1H");
@@ -192,6 +207,13 @@
 		#define Clear2 gotoxy(0, 0); for (int i = 0;i < 50; i++) { printf("                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    "); } gotoxy(0, 0);
 	#endif
 #endif
+
+// ======================================================================================================================================================
+// ======================================================================== End =========================================================================
+
+
+// ======================================================================= Menu =========================================================================
+// ======================================================================================================================================================
 
 int Menu(char *title, char *text[], int tl, int list) { /* 菜单程序 */
 #ifdef __linux
@@ -368,4 +390,355 @@ int Menu(char *title, char *text[], int tl, int list) { /* 菜单程序 */
 	}
 	return 0;
 }
+
+// ======================================================================================================================================================
+// ======================================================================== End =========================================================================
+
+
+// ====================================================================== NewMenu =======================================================================
+// ======================================================================================================================================================
+
+// 定义数据类型
+// ======================================================================================================================================================
+
+//  struct Text {
+//          char        * text;         /* 条例内容 */
+//          char        * describe;     /* 描述/帮助信息 */
+//          void       (* function);    /* 调用的函数 */
+//          int           number;       /* 编号 */
+//          int           cfg;          /* 类型 */
+//          struct Text * nextText;     /* 下一条例（链表） */
+//  };                                  /* 条例结构体 */
+//
+//  typedef struct _menuData{
+//          char        * title;                                                                      /* 标题 */
+//          struct Text * text;                                                                       /* 条例链表头 */
+//          struct Text * focus;                                                                      /* 选中的条例 */
+//          int           cfg;                                                                        /* 菜单状态 */
+//          void       (* addText)    (struct _menuData * data, ...);                                 /* 添加条例 */
+//          void       (* addTextData)(struct _menuData * data, int type, char * format, ...);       /* 添加条例信息 */
+//          void       (* getFocus)   (struct _menuData * data, int number);                          /* 更改焦点指针 */
+//  }menuData;                                                                                        /* 菜单类/结构体 */
+
+// 函数声明
+// ======================================================================================================================================================
+
+//  void menuDataInit(menuData * data);
+//  void _menuAddText(menuData * data, ...);
+//  void _menuAddTextData(menuData * data, int type, char * format, ...);
+//  void _menuGetFocus(menuData * data, int number);
+//  static void MenuScreen();
+
+//
+// ======================================================================================================================================================
+
+#define LineH "─"
+#define LineV "│"
+#define LineLU "┌"
+#define LineLD "└"
+#define LineRU "┐"
+#define LineRD "┘"
+#define LineLC "├"
+#define LineRC "┤"
+#define LineCC "┼"
+#define LineUC "┬"
+#define LineDC "┴"
+#define LineCLU "╭"
+#define LineCLD "╰"
+#define LineCRU "╮"
+#define LineCRD "╯"
+#define ArrowOn "↑"
+#define ArrowDn "↓"
+
+void menuDataInit(menuData * data) {    /* 初始化结构体 */
+	data -> title       = NULL;
+	data -> text        = NULL;
+	data -> focus       = NULL;
+	data -> cfg         = 0;
+	data -> addText     = _menuAddText;
+	data -> addTextData = _menuAddTextData;
+	data -> getFocus    = _menuGetFocus;
+	data -> menuShow    = _menu;
+	return;
+}
+
+void _menuAddText(menuData * data, ...) {
+	struct Text * pNew, * pTmp;
+	va_list text;
+
+	va_start(text, data);
+	if (data -> text != NULL) {
+		free(data -> text);
+	}
+
+	pNew = data -> text = malloc(sizeof(struct Text));
+	pNew -> text     = va_arg(text, char *);
+	pNew -> number   = 1;
+	pNew -> describe = NULL;
+	pNew -> cfg      = 0;
+
+	for (int i = 2; pNew -> text != NULL; i++) {
+		pTmp             = pNew;
+		pNew -> nextText = malloc(sizeof(struct Text));
+		pNew             = pNew -> nextText;
+		pNew -> text     = va_arg(text, char *);
+		pNew -> describe = NULL;
+		pNew -> number   = i;
+		pNew -> cfg      = 0;
+	}
+	free(pNew);
+	pTmp -> nextText = NULL;
+	va_end(text);
+	return;
+}
+
+void _menuAddTextData(menuData * data, int type, char * format, ...) {    /* type:0 -> describe, 1 -> function */
+	struct Text * pNew;
+	va_list text;
+
+	va_start(text, format);
+	pNew = data -> text;
+	while (*format != '\0') {
+		if (*format == '%' && *(format + 1) == 's') {
+			if (!type) {
+				pNew -> describe = va_arg(text, char *);
+			}
+			else {
+				pNew -> function = va_arg(text, void *);
+			}
+			pNew = pNew -> nextText;
+			format++;
+		}
+		else if (*format == '%' && *(format + 1) == 'n') {
+			pNew = pNew -> nextText;
+			format++;
+		}
+		format++;
+	}
+	va_end(text);
+	return;
+}
+
+void _menuGetFocus(menuData * data, int number) {
+	if (data -> focus == NULL) {
+		data -> focus = data -> text;
+	}
+	if (number <= 0) {
+		while (data -> focus -> nextText != NULL) {
+			data -> focus = data -> focus -> nextText;
+		}
+		return;
+	}
+	if (data -> focus -> number > number) {
+		data -> focus = data -> text;
+	}
+	while (data -> focus -> number < number) {
+		data -> focus = data -> focus -> nextText;
+	}
+	return;
+}
+
+// NewMenu
+// ======================================================================================================================================================
+
+#define winSizeCol size.ws_col    /* x轴 */
+#define winSizeRol size.ws_row    /* y轴 */
+
+int _menu(menuData * data) {
+#ifdef __linux
+	struct winsize size;
+	//铺上底色
+	//  Clear2
+	//  printf("\033[0;44;37m");
+	//  Clear
+	data -> getFocus(data, 0);
+	int input = 1, focus = 1, firstText = 0, allChose = data -> focus -> number;
+	int allPages = (allChose - 1) / (4 * 2) + 1;
+	char * ch;
+
+	while (input != 0x30 && input != 0x1B) {
+		//铺上底色
+		printf("\033[0;44;37m");
+		Clear
+		ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
+		winSizeCol = size.ws_col;
+
+		_menuShowScreen(data);
+		for (int i = 1; i - firstText <= allChose && i - firstText <= winSizeRol - 10; i++) {
+			if (i <= firstText) {
+				continue;
+			}
+			data -> getFocus(data, i);
+			if (i != focus) {
+				printf("\033[0;44;37m");
+			}
+			else {
+				printf("\033[0;30;47m");
+				for (int i = 8; i <= winSizeRol - 1; i++) {
+					printf("\033[%d;%dH", i, winSizeCol / 2 + 2);
+					for (int i2 = winSizeCol / 2 + 2; i2 <= winSizeCol - 2; i2++) {
+						printf(" ");
+					}
+				}
+				if (data -> focus -> describe != NULL) {
+					int i2 = 9;
+
+					printf("\033[%d;%dH\033[0;30;47m", i2, winSizeCol / 2 + 3);
+					ch = data -> focus -> describe;
+					for (int i = 1; *ch != '\0'; i++) {
+						if (i >= winSizeCol / 2 - 4) {
+							i2++;
+							printf("\033[%d;%dH", i2 , winSizeCol / 2 + 3);
+							i = 0;
+							kbhitGetchar();
+						}
+						printf("%c", *ch);
+						ch++;
+					}
+				}
+				printf("\033[1;7;47;33m");
+			}
+			printf("\033[%d;4H", i + 8 - firstText);
+			for (int i = 0; i <= winSizeCol / 2 - 7; i++) {
+				printf(" ");
+			}
+			printf("\033[%d;4H%s\033[0m", i + 8 - firstText, data -> focus -> text);
+			kbhitGetchar();
+		}
+		input = getch();
+		switch (input) {
+			case 0x1B:
+				if (kbhit() != 0) {
+					getchar();
+					input = getch();
+					switch (input) {
+						case 'A':
+						case 'D':
+							if (focus > 1) {
+								focus--;
+							}
+							while (focus - firstText < 1) {
+								firstText--;
+							}
+							break;
+						case 'B':
+						case 'C':
+							if (focus < allChose) {
+								focus++;
+							}
+							while (focus - firstText > winSizeRol - 10) {
+								firstText++;
+							}
+							break;
+					}
+				}
+				else {
+					Clear2
+					return '0';
+				}
+				break;
+			case 'd':
+			case 'D':
+			case 'l':
+			case 'L':
+			case 's':
+			case 'S':
+			case 'j':
+			case 'J':
+				if (focus < allChose) {
+					focus++;
+				}
+				while (focus - firstText > winSizeRol - 10) {
+					firstText++;
+				}
+				break;
+			case 'a':
+			case 'A':
+			case 'h':
+			case 'H':
+			case 'w':
+			case 'W':
+			case 'k':
+			case 'K':
+				if (focus > 1) {
+					focus--;
+				}
+				while (focus - firstText < 1) {
+					firstText--;
+				}
+				break;
+			case 'q':
+			case 'Q':
+				Clear
+				return '0';
+				break;
+			case ' ':
+			case '\n':
+			case '\r':
+				Clear2
+				char output[10];    /* 仅用作字符输出 */
+				sprintf(output, "%d", focus);
+				return output[0];
+				break;
+			default:
+				Clear2
+				return input;
+				break;
+		}
+	}
+#endif
+	return 0;
+}
+
+// MenuScreen
+// ======================================================================================================================================================
+
+void _menuShowScreen(menuData * data) {
+	struct winsize size;
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
+
+	//铺上底色
+	printf("\033[0;44;37m");
+	Clear
+	printf("\033[1;1H");
+	printf(LineLU);
+	for (int i = 2; i < winSizeCol; i++) {
+		printf("\033[1;%dH%s\033[5;%dH%s\033[%d;%dH%s\033[7;%dH%s", i, LineH, i, LineH, winSizeRol, i, LineH, i, LineH);
+	}
+	printf("\033[6;%dH选项\033[6;%dH描述",winSizeCol / 4 - 2, winSizeCol /4 * 3 - 2);
+	for (int i = 2; i < winSizeRol; i++) {
+		printf("\033[%d;1H%s\033[%d;%dH%s", i, LineV, i, winSizeCol, LineV);
+		if (i >= 6) {
+			printf("\033[%d;%dH%s", i, winSizeCol / 2, LineV);
+		}
+	}
+	for (int i = 2; i < winSizeCol; i++) {
+	}
+	printf("\033[%d;1H%s\033[%d;%dH%s\033[1;%dH%s\033[5;1H%s\033[5;%dH%s\033[5;%dH%s\033[%d;%dH%s\033[7;%dH%s\033[7;1H%s\033[7;%dH%s", winSizeRol, LineLD, winSizeRol, winSizeCol, LineRD, winSizeCol, LineRU, LineLC, winSizeCol, LineRC, winSizeCol / 2, LineUC, winSizeRol ,winSizeCol / 2, LineDC, winSizeCol / 2, LineCC, LineLC, winSizeCol, LineRC);
+	//  printf("\033[0;2;44;32m\033[6;%dH↑\033[11;%dH↓\033[11;%dH\033[0;2;44;32m%d/%d\033[0;1;44;33m", winSizeCol / 2 - 1, winSizeCol / 2 - 1, winSizeCol / 2 + 25, currentPage,allPages);
+	printf("\033[3;%dH\033[1;44;37m%s\033[0m", winSizeCol / 2 - (int)strlen(data -> title) / 2, data -> title);
+	
+	return;
+}
+
+#undef winSizeCol
+#undef winSizeRol
+
+#undef LineH 
+#undef LineV 
+#undef LineLU
+#undef LineLD
+#undef LineRU
+#undef LineRD
+#undef LineLC
+#undef LineRC
+#undef LineCC
+#undef LineUC
+#undef LineDC
+#undef LineCLU
+#undef LineCLD
+#undef LineCRU
+#undef LineCRD
+#undef ArrowOn
+#undef ArrowDn
 

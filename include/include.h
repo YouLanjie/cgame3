@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <signal.h>
 /* signal() */
+#include <stdarg.h>
 
 /* 预定义Linux要用到的东西 */
 #ifdef __linux
@@ -60,6 +61,37 @@ int kbhitGetchar();
 int Menu(char *title, char *text[], int tl, int list);
 void Menu2(char title[], short p, short a);
 void Menu3(char title[]);
+
+
+// The new menu function.
+// ======================================================================================================================================================
+struct Text {
+	char        * text;         /* 条例内容 */
+	char        * describe;     /* 描述/帮助信息 */
+	void       (* function);    /* 调用的函数 */
+	int           number;       /* 编号 */
+	int           cfg;          /* 类型 */
+	struct Text * nextText;     /* 下一条例（链表） */
+};                                  /* 条例结构体 */
+
+typedef struct _menuData{
+	char        * title;                                                                      /* 标题 */
+	struct Text * text;                                                                       /* 条例链表头 */
+	struct Text * focus;                                                                      /* 选中的条例 */
+	int           cfg;                                                                        /* 菜单状态 */
+	void       (* addText)    (struct _menuData * data, ...);                                 /* 添加条例 */
+	void       (* addTextData)(struct _menuData * data, int type, char * format, ...);        /* 添加条例信息 */
+	void       (* getFocus)   (struct _menuData * data, int number);                          /* 更改焦点指针 */
+	int        (* menuShow)   (struct _menuData * data);                                      /* 更改焦点指针 */
+}menuData;                                                                                        /* 菜单类/结构体 */
+
+void  menuDataInit(menuData * data);
+void _menuAddText(menuData * data, ...);
+void _menuAddTextData(menuData * data, int type, char * format, ...);
+void _menuGetFocus(menuData * data, int number);
+int  _menu(menuData * data);
+void _menuShowScreen(menuData * data);
+
 
 #endif
 
