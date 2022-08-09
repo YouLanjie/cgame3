@@ -1,0 +1,4 @@
+*.o
+.vscode
+cgame3_save
+top.txt

@@ -1,8 +1,8 @@
-/* File name: include.h */
+/* File name: tools.h */
 /* This is a head file */
 
-#ifndef _INCLUDE_H_
-#define _INCLUDE_H_
+#ifndef _TOOLS_H_
+#define _TOOLS_H_
 
 /* include head file */
 #include <stdio.h>
@@ -85,16 +85,7 @@ typedef struct _menuData{
 	int        (* menuShow)   (struct _menuData * data);                                      /* 更改焦点指针 */
 }menuData;                                                                                        /* 菜单类/结构体 */
 
-void  menuDataInit(menuData * data);
-void _menuAddText(menuData * data, ...);
-void _menuAddTextData(menuData * data, int type, char * format, ...);
-void _menuGetFocus(menuData * data, int number);
-int  _menu(menuData * data);
-void _menuShowScreen(menuData * data);
-void _menuShowDescribe(menuData * data, int focus, int focus2, int noShowText2, int * allDescribe);
-void _menuShowText(menuData * data, int focus, int noShowText, int allChose);
-int  _menuInput(int * input, int * focus, int * noShowText, int allChose);
-
+extern void  menuDataInit(menuData * data);
 
 #endif
 
