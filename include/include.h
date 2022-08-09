@@ -91,6 +91,9 @@ void _menuAddTextData(menuData * data, int type, char * format, ...);
 void _menuGetFocus(menuData * data, int number);
 int  _menu(menuData * data);
 void _menuShowScreen(menuData * data);
+void _menuShowDescribe(menuData * data, int focus, int focus2, int noShowText2, int * allDescribe);
+void _menuShowText(menuData * data, int focus, int noShowText, int allChose);
+int  _menuInput(int * input, int * focus, int * noShowText, int allChose);
 
 
 #endif
