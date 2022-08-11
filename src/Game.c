@@ -108,6 +108,7 @@ void Game() {    /* 实现游戏的函数 */
 				}
 				Settings();
 				/* 恢复显示界面 */
+				printf("\033[0;44;37m");
 				Clear
 				printSnake();
 				break;
@@ -201,9 +202,9 @@ static void printSnake() {
 	struct Snake *pNext = pHead;
 
 	/* 打印信息 */
-	printf("\033[%d;%dH长度:%4d\033[%d;%dH分数:%4d\033[%d;%dH延迟秒数:%4ld\033[%d;%dH延迟微秒:%6ld", size.ws_row, size.ws_col / 6 * 0, Long, size.ws_row, (size.ws_col / 6) * 1, (Long - 4) * 10, size.ws_row, (size.ws_col / 6) * 2, tick.it_interval.tv_sec, size.ws_row, (size.ws_col / 6) * 4, tick.it_interval.tv_usec);
+	printf("\033[0;44;37m\033[%d;%dH长度:%4d\033[%d;%dH分数:%4d\033[%d;%dH延迟秒数:%4ld\033[%d;%dH延迟微秒:%6ld", size.ws_row, size.ws_col / 6 * 0, Long, size.ws_row, (size.ws_col / 6) * 1, (Long - 4) * 10, size.ws_row, (size.ws_col / 6) * 2, tick.it_interval.tv_sec, size.ws_row, (size.ws_col / 6) * 4, tick.it_interval.tv_usec);
 	/* 打印边框 */
-	printf("\033[0;2;34m");
+	printf("\033[0;2;34;44m");
 	for (int i = 1; i <= size.ws_col; i++) {
 		printf("\033[1;%dH#", i);
 	}
@@ -215,16 +216,16 @@ static void printSnake() {
 	}
 	kbhitGetchar();
 	/* 打印头 */
-	printf("\033[%d;%dH\033[1;32m@\033[0m", pNext -> y, pNext -> x);
+	printf("\033[%d;%dH\033[1;37;44m@\033[0m", pNext -> y, pNext -> x);
 	pNext = pNext -> pNext;
 	for (int i = 1; i < Long; i++) {
-		printf("\033[%d;%dH\033[1;33m#\033[0m", pNext -> y, pNext -> x);
+		printf("\033[%d;%dH\033[1;33;44m#\033[0m", pNext -> y, pNext -> x);
 		if (i + 1 < Long) {
 			pNext = pNext -> pNext;
 		}
 	}
 	/* 打印食物 */
-	printf("\033[%d;%dH\033[1;36m%%\033[0m", pNext -> pNext -> y, pNext -> pNext -> x);
+	printf("\033[%d;%dH\033[1;37;44m%%\033[0m", pNext -> pNext -> y, pNext -> pNext -> x);
 	kbhitGetchar();
 	return;
 }
@@ -239,6 +240,8 @@ static void runGame() {
 		pLast = pLast -> pNext;
 	}
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
+	//铺上底色
+	printf("\033[0;44;37m");
 	Clear
 	kbhitGetchar();
 	while (BORE) {
@@ -273,9 +276,9 @@ static void runGame() {
 		/* 死亡判定 */
 		if (pHead -> x <= 1 || pHead -> x > size.ws_col - 1 || pHead -> y <= 1 || pHead -> y > size.ws_row - 2) {
 			alarm(0);
-			Clear
+			Clear2
 			kbhitGetchar();
-			printf("\033[8;%dH\033[0;1;31m撞墙\033[0m\n",size.ws_col / 2 - 4);
+			printf("\033[0m\033[8;%dH\033[0;1;31m撞墙\033[0m\n",size.ws_col / 2 - 4);
 			Menu3("结束提示");
 			printf("\033[11;%dH\033[1;31m按任意Q或者回车或者Esc返回：\033[0m", size.ws_col / 2 - 23);
 			kbhitGetchar();
@@ -290,9 +293,9 @@ static void runGame() {
 		while (pNext -> pNext != pFood) {
 			if (pHead -> x == pNext -> x && pHead -> y == pNext -> y) {
 				alarm(0);
-				Clear
+				Clear2
 				kbhitGetchar();
-				printf("\033[8;%dH\033[0;1;31m吃错东西了\033[0m\n",size.ws_col / 2 - 4);
+				printf("\033[0m\033[8;%dH\033[0;1;31m吃错东西了\033[0m\n",size.ws_col / 2 - 4);
 				Menu3("结束提示");
 				printf("\033[11;%dH\033[1;31m按任意Q或者回车或者Esc返回：\033[0m", size.ws_col / 2 - 23);
 				kbhitGetchar();

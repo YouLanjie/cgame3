@@ -11,7 +11,7 @@ all: cgame3
 
 $(prom): $(OBJ)
 	@rm -rf $(BIN)
-	$(CC) $(OBJ) lib/tools.a -o $(prom)
+	$(CC) $(OBJ) -L lib -ltools -o $(prom)
 	@mkdir bin
 	@mv $(prom) $(BIN)/main
 
