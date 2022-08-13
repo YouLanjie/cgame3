@@ -5,14 +5,24 @@ static struct Snake *mkFood();
 static void printSnake();
 static void runGame();
 
-int way = Up;
-int Long = 0;    /* 蛇身的长度 */
-short Lock = 0;
-struct Snake *pHead = NULL, *pFood = NULL; 
-struct winsize size;    /* 记录窗口大小 */
+static int way = Up;
+static int Long = 0;    /* 蛇身的长度 */
+static short Lock = 0;
+static struct Snake *pHead = NULL, *pFood = NULL; 
+static struct winsize size;    /* 记录窗口大小 */
+static menuData end;
+
 
 void Game() {    /* 实现游戏的函数 */
 	FILE * fpSave;    /* 保存文件用 */
+
+	//铺上底色
+	printf("\033[0;44;37m");
+	Clear
+
+	menuDataInit(&end);
+	end.title = "游戏结束";
+	end.cfg   = 4;
 
 	way = Up;
 	pHead = pFood = NULL;
@@ -90,19 +100,22 @@ void Game() {    /* 实现游戏的函数 */
 				break;
 			case 'p':    /* 暂停 */
 			case 'P':
-				if (Lock && pHead != NULL) {    /* 如果已经暂停 */
+				if (Lock == 1 && pHead != NULL) {    /* 如果已经暂停 */
 					if (setitimer(ITIMER_REAL, &tick, NULL)) {
 						perror("Error");
 						getch();
 						return;
 					}
 				}
-				else {    /* 如果未暂停 */
+				else if (Lock != 2) {    /* 如果未暂停 */
 					alarm(0);
 				}
 				break;
 			case 'o':
 			case 'O':
+				if (Lock == 2) {
+					break;
+				}
 				if (!Lock && pHead != NULL) {    /* 未暂停则暂停后启用 */
 					alarm(0);
 				}
@@ -114,15 +127,27 @@ void Game() {    /* 实现游戏的函数 */
 				break;
 			case 'q':
 			case 'Q':
+			case '0':
 				alarm(0);
 				if (pHead != NULL) {
+					end.addText(&end, "%z结束理由：%z", "%z手动退出%z", "%z按%zQ%z或者%zEsc%z返回：%z", NULL);
+					printf("\033[0;44;37m");
 					Clear
-					printf("\033[8;%dH\033[0;1;31m退出\033[0m\n",size.ws_col / 2 - 4);
-					Menu3("结束提示");
-					printf("\033[11;%dH\033[1;31m按任意Q或者Esc返回：\033[0m", size.ws_col / 2 - 23);
-					kbhitGetchar();
+					end.menuShow(&end);
 					free(pHead);
-					getch();
+					while (1) {
+						switch (getch()) {
+							case 'q':
+							case 'Q':
+							case 0x1B:
+							case '0':
+								break;
+							default:
+								continue;
+								break;
+						}
+						break;
+					}
 				}
 				way = 'q';
 				break;
@@ -145,7 +170,6 @@ void Game() {    /* 实现游戏的函数 */
 
 static struct Snake * init() {
 	struct Snake *pNew = NULL, *pLast = NULL;
-	short BORE = 1;
 
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
 	/* 创建蛇 */
@@ -275,12 +299,12 @@ static void runGame() {
 		pLast -> pNext = pFood;
 		/* 死亡判定 */
 		if (pHead -> x <= 1 || pHead -> x > size.ws_col - 1 || pHead -> y <= 1 || pHead -> y > size.ws_row - 2) {
+			Lock = 2;
 			alarm(0);
 			Clear2
 			kbhitGetchar();
-			printf("\033[0m\033[8;%dH\033[0;1;31m撞墙\033[0m\n",size.ws_col / 2 - 4);
-			Menu3("结束提示");
-			printf("\033[11;%dH\033[1;31m按任意Q或者回车或者Esc返回：\033[0m", size.ws_col / 2 - 23);
+			end.addText(&end, "%z结束理由：%z", "%z让你好好走路你偏不好好走，现在撞墙了吧%z", "%z按%zQ%z或者%zEsc%z返回：%z", NULL);
+			end.menuShow(&end);
 			kbhitGetchar();
 			free(pHead);
 			pHead = NULL;
@@ -292,12 +316,12 @@ static void runGame() {
 		pNext = pHead -> pNext;
 		while (pNext -> pNext != pFood) {
 			if (pHead -> x == pNext -> x && pHead -> y == pNext -> y) {
+				Lock = 2;
 				alarm(0);
 				Clear2
 				kbhitGetchar();
-				printf("\033[0m\033[8;%dH\033[0;1;31m吃错东西了\033[0m\n",size.ws_col / 2 - 4);
-				Menu3("结束提示");
-				printf("\033[11;%dH\033[1;31m按任意Q或者回车或者Esc返回：\033[0m", size.ws_col / 2 - 23);
+				end.addText(&end, "%z结束理由：%z", "%z吃错东西了，自己吃自己，自相残杀%z", "%z按%zQ%z或者%zEsc%z返回：%z", NULL);
+				end.menuShow(&end);
 				kbhitGetchar();
 				free(pHead);
 				pHead = NULL;
