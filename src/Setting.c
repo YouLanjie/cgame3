@@ -1,9 +1,8 @@
 #include "../include/head.h"
 
 void Settings() {
-	menuData data;
+	menuData data = menuDataInit();
 
-	menuDataInit(&data);
 	data.title = "设置";
 	data.cfg   = 3;
 	data.addText(&data, "秒数", "微秒数", NULL);
