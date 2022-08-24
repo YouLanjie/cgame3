@@ -10,17 +10,16 @@ static int Long = 0;    /* 蛇身的长度 */
 static short Lock = 0;
 static struct Snake *pHead = NULL, *pFood = NULL; 
 static struct winsize size;    /* 记录窗口大小 */
-static menuData end;
 
 
 void Game() {    /* 实现游戏的函数 */
 	FILE * fpSave;    /* 保存文件用 */
+	menuData end = menuDataInit();
 
 	//铺上底色
 	printf("\033[0;44;37m");
 	Clear
 
-	menuDataInit(&end);
 	end.title = "游戏结束";
 	end.cfg   = 4;
 
@@ -256,7 +255,11 @@ static void printSnake() {
 
 static void runGame() {
 	struct Snake *pLast = pHead, *pNext = pHead;
+	menuData end = menuDataInit();
 	short BORE = 1;
+
+	end.title = "游戏结束";
+	end.cfg   = 4;
 
 	pNext = pNext -> pNext;
 	while (pNext -> pNext != pFood) {
