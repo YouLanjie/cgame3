@@ -35,7 +35,7 @@ void Game() {    /* 实现游戏的函数 */
 			case 0x1B:
 				if (kbhit() != 0) {
 					getchar();
-					switch (getch()) {
+					switch (getchar()) {
 						case 'A':
 							if (way != Down && !Lock) {
 								way = Up;
