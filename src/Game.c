@@ -1,5 +1,4 @@
 #include "../include/head.h"
-#include <curses.h>
 
 static struct Snake *init();
 static struct Snake *mkFood();
@@ -14,7 +13,6 @@ static struct winsize size;	/* 记录窗口大小 */
 
 void Game()
 {				/* 实现游戏的函数 */
-	FILE *fpSave;		/* 保存文件用 */
 	menuData end = menuDataInit();
 
 	end.title = "游戏结束";
@@ -153,11 +151,6 @@ void Game()
 		Lock = 1;
 	}
 	alarm(0);
-	fpSave = fopen("cgame3_save", "a");
-	if (fpSave) {
-		fprintf(fpSave, "%d %d\n", Long, (Long - 4) * 10);
-		fclose(fpSave);
-	}
 	return;
 }
 
