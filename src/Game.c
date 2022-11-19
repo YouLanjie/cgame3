@@ -13,10 +13,11 @@ static struct winsize size;	/* 记录窗口大小 */
 
 void Game()
 {				/* 实现游戏的函数 */
-	menuData end = menuDataInit();
+	ctools_menu_t * end = NULL;
 
-	end.title = "游戏结束";
-	end.cfg = 4;
+	ctools_menu_t_init(&end);
+	end->title = "游戏结束";
+	end->cfg = 4;
 
 	way = Up;
 	pHead = pFood = NULL;
@@ -31,7 +32,7 @@ void Game()
 	while (way != 'q' && way != 'Q' && way != 0x1B) {
 		switch (getch()) {
 		case 0x1B:
-			if (kbhit() != 0) {
+			if (ctools_kbhit() != 0) {
 				getchar();
 				switch (getchar()) {
 				case 'A':
@@ -119,11 +120,11 @@ void Game()
 		case '0':
 			alarm(0);
 			if (pHead != NULL) {
-				end.addText(&end, "%z结束理由：%z",
+				ctools_menu_AddText(end, "%z结束理由：%z",
 					    "%z手动退出%z",
 					    "%z按%zQ%z或者%zEsc%z返回：%z",
 					    NULL);
-				end.menuShow(&end);
+				ctools_menu_Show(end);
 				refresh();
 				free(pHead);
 				while (1) {
@@ -262,12 +263,16 @@ static void printSnake()
 
 static void runGame()
 {
-	struct Snake *pLast = pHead, *pNext = pHead;
-	menuData end = menuDataInit();
-	short BORE = 1;
+	int    tmp_x = 0,
+	       tmp_y = 0;
+	short  BORE = 1;    /* 循环判断 */
+	struct Snake  * pLast = pHead,
+		      * pNext = pHead;
+	ctools_menu_t * end = NULL;
 
-	end.title = "游戏结束";
-	end.cfg = 4;
+	ctools_menu_t_init(&end);
+	end->title = "游戏结束";
+	end->cfg = 4;
 
 	pNext = pNext->pNext;
 	while (pNext->pNext != pFood) {
@@ -277,6 +282,8 @@ static void runGame()
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
 	while (BORE) {
 		BORE = 0;
+		tmp_x = pNext->x;
+		tmp_y = pNext->y;
 		switch (way) {
 		case Up:
 			pNext->x = pHead->x;
@@ -310,10 +317,10 @@ static void runGame()
 			Lock = 2;
 			alarm(0);
 			clear();
-			end.addText(&end, "%z结束理由：%z",
+			ctools_menu_AddText(end, "%z结束理由：%z",
 				    "%z让你好好走路你偏不好好走，现在撞墙了吧%z",
 				    "%z按%zQ%z或者%zEsc%z返回：%z", NULL);
-			end.menuShow(&end);
+			ctools_menu_Show(end);
 			refresh();
 			free(pHead);
 			pHead = NULL;
@@ -328,11 +335,11 @@ static void runGame()
 				Lock = 2;
 				alarm(0);
 				clear();
-				end.addText(&end, "%z结束理由：%z",
+				ctools_menu_AddText(end, "%z结束理由：%z",
 					    "%z吃错东西了，自己吃自己，自相残杀%z",
 					    "%z按%zQ%z或者%zEsc%z返回：%z",
 					    NULL);
-				end.menuShow(&end);
+				ctools_menu_Show(end);
 				refresh();
 				free(pHead);
 				pHead = NULL;
@@ -345,28 +352,15 @@ static void runGame()
 		}
 		if (BORE) {
 			/* 为蛇添加长度 */
-			switch (way) {
-			case Up:
-				pFood->x = pHead->x;
-				pFood->y = pHead->y - 1;
-				break;
-			case Down:
-				pFood->x = pHead->x;
-				pFood->y = pHead->y + 1;
-				break;
-			case Right:
-				pFood->x = pHead->x + 1;
-				pFood->y = pHead->y;
-				break;
-			case Left:
-				pFood->x = pHead->x - 1;
-				pFood->y = pHead->y;
-				break;
-			}
-			pFood->pNext = pHead;
-			pHead = pFood;
-			pNext->pNext = pFood = NULL;
+			pFood->pNext = NULL;
+			pFood->x = tmp_x;
+			pFood->y = tmp_y;
+			pNext->pNext = pFood;
+			pLast = pNext;
+			pNext = pNext->pNext;
+			pFood = NULL;
 			Long++;
+			BORE = 0;
 		}
 		if (pFood == NULL) {
 			pFood = mkFood();

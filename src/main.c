@@ -5,19 +5,26 @@ struct itimerval tick;
 int main()
 {
 	int inputContent = 1;
+	ctools_menu_t * menu = NULL,
+		      * help = NULL;
 
-	menuData menu = menuDataInit(), help = menuDataInit();
+	ctools_menu_Init();
+	ctools_menu_t_init(&menu);
+	ctools_menu_t_init(&help);
+	menu->title = "贪吃蛇游戏";
+	ctools_menu_AddText(menu,
+			"1.开始游戏",
+			"2.游戏帮助",
+			"3.游戏设置",
+			NULL);
+	ctools_menu_AddTextData(menu, 0, "%s%s%s",
+			"%z开始贪吃蛇游戏%z",
+			"%z查看游戏的全部帮助%z",
+			"%z设置游戏的更新时间（更新间隔），分别为秒与微秒。延迟数字越大游戏速度越慢%z");
 
-	menu.title = "贪吃蛇游戏";
-	menu.addText(&menu, "1.开始游戏", "2.游戏帮助",
-		     "3.游戏设置", NULL);
-	menu.addTextData(&menu, 0, "%s%s%s", "%z开始贪吃蛇游戏%z",
-			 "%z查看游戏的全部帮助%z",
-			 "%z设置游戏的更新时间（更新间隔），分别为秒与微秒。延迟数字越大游戏速度越慢%z");
-
-	help.title = "游戏帮助";
-	help.cfg = 2;
-	help.addText(&help,
+	help->title = "游戏帮助";
+	help->cfg = 2;
+	ctools_menu_AddText(help,
 		     "1.%z主界面可以使用%zWASD%z或者方向键再或%zvim%z键位移动选择的选项，并且按下空格或回车选择对应的选项光标移动到当页尽头后如果还有内容会翻页到下一页，右下角会有当前所在的页数和总页数的提示%z",
 		     "2.%z游戏界面可以使用同主界面一样的键位移动方向%z",
 		     "3.%z在游戏中可以使用%zq%z退出，或者使用%zp%z来暂停。%z",
@@ -36,13 +43,13 @@ int main()
 	while (inputContent != 0x1B && inputContent != '0'
 	       && inputContent != 'Q' && inputContent != 'q') {
 		clear();
-		inputContent = menu.menuShow(&menu);
+		inputContent = ctools_menu_Show(menu);
 		switch (inputContent) {
 		case '1':
 			Game();
 			break;
 		case '2':
-			help.menuShow(&help);
+			ctools_menu_Show(help);
 			break;
 		case '3':
 			Settings();
