@@ -21,7 +21,7 @@ void Game()
 
 	way = Up;
 	pHead = pFood = NULL;
-	pHead = init(&Long, &size);
+	pHead = init();
 	alarm(0);
 	signal(SIGALRM, runGame);
 	if (setitimer(ITIMER_REAL, &tick, NULL)) {
@@ -120,9 +120,9 @@ void Game()
 		case '0':
 			alarm(0);
 			if (pHead != NULL) {
-				ctools_menu_AddText(end, "%z结束理由：%z",
-					    "%z手动退出%z",
-					    "%z按%zQ%z或者%zEsc%z返回：%z",
+				ctools_menu_AddText(end, "结束理由：",
+					    "手动退出",
+					    "按Q或者Esc返回：",
 					    NULL);
 				ctools_menu_Show(end);
 				refresh();
@@ -155,13 +155,13 @@ void Game()
 	return;
 }
 
-static struct Snake *init()
+static struct Snake *init(void)
 {
 	struct Snake *pNew = NULL, *pLast = NULL;
 
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
 	/* 创建蛇 */
-	pHead = pLast = pNew = (struct Snake *)malloc(sizeof(struct Snake));
+	pHead = pNew = (struct Snake *)malloc(sizeof(struct Snake));
 	pHead->x = size.ws_col / 2;	/* 设置位置 */
 	pHead->y = size.ws_row / 2;
 	for (Long = 1; Long < 4; Long++) {
@@ -179,7 +179,7 @@ static struct Snake *init()
 	return pHead;
 }
 
-static struct Snake *mkFood()
+static struct Snake *mkFood(void)
 {
 	struct Snake *pFood = NULL, *pNext = NULL;
 	struct timeval gettime;
@@ -205,7 +205,7 @@ static struct Snake *mkFood()
 	return pFood;
 }
 
-static void printSnake()
+static void printSnake(void)
 {
 	struct Snake *pNext = pHead;
 
@@ -261,7 +261,7 @@ static void printSnake()
 	return;
 }
 
-static void runGame()
+static void runGame(void)
 {
 	int    tmp_x = 0,
 	       tmp_y = 0;
@@ -317,9 +317,9 @@ static void runGame()
 			Lock = 2;
 			alarm(0);
 			clear();
-			ctools_menu_AddText(end, "%z结束理由：%z",
-				    "%z让你好好走路你偏不好好走，现在撞墙了吧%z",
-				    "%z按%zQ%z或者%zEsc%z返回：%z", NULL);
+			ctools_menu_AddText(end, "结束理由：",
+				    "让你好好走路你偏不好好走，现在撞墙了吧",
+				    "按Q或者Esc返回：", NULL);
 			ctools_menu_Show(end);
 			refresh();
 			free(pHead);
@@ -335,9 +335,9 @@ static void runGame()
 				Lock = 2;
 				alarm(0);
 				clear();
-				ctools_menu_AddText(end, "%z结束理由：%z",
-					    "%z吃错东西了，自己吃自己，自相残杀%z",
-					    "%z按%zQ%z或者%zEsc%z返回：%z",
+				ctools_menu_AddText(end, "结束理由：",
+					    "吃错东西了，自己吃自己，自相残杀",
+					    "按Q或者Esc返回：",
 					    NULL);
 				ctools_menu_Show(end);
 				refresh();
