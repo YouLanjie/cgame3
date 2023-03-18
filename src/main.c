@@ -9,6 +9,9 @@ int main()
 		      * help = NULL;
 
 	ctools_menu_Init();
+
+	init_pair(1, COLOR_WHITE, COLOR_BLUE);      /* 蓝底白字 */
+
 	ctools_menu_t_init(&menu);
 	ctools_menu_t_init(&help);
 	menu->title = "贪吃蛇游戏";
