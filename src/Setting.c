@@ -1,23 +1,25 @@
 #include "../include/head.h"
 
+extern ctools_menu CT_MENU;
+
 void Settings()
 {
-	ctools_menu_t * data = NULL;
+	ctools_menu *m = &CT_MENU;
+	struct ctools_menu_t *data;
 
-	ctools_menu_t_init(&data);
-
-	data->title = "设置";
-	data->cfg = 3;
-	ctools_menu_AddText(data, "秒数", "微秒数", NULL);
-	ctools_menu_AddTextData(data, ctools_menu_TextDataDescribe, "%s%s",
+	m->data_init(&data);
+	m->set_title(data, "设置");
+	m->set_type(data, "setting");
+	m->add_text(data, "秒数", "微秒数", NULL);
+	m->add_text_data(data, "describe", "%s%s",
 			 "设置游戏更新间隔的秒数",
 			 "设置游戏更新间隔的微秒数");
-	ctools_menu_AddTextData(data, ctools_menu_TextDataSetType, "%s%s", 1, 1);
-	ctools_menu_AddTextData(data, ctools_menu_TextDataSetVar, "%s%s",
+	m->add_text_data(data, "type", "%s%s", 1, 1);
+	m->add_text_data(data, "var", "%s%s",
 			 &tick.it_interval.tv_sec, &tick.it_interval.tv_usec);
-	ctools_menu_AddTextData(data, ctools_menu_TextDataSetFoot, "%s%s", 1, 1000);
-	ctools_menu_AddTextData(data, ctools_menu_TextDataSetMin, "%s%s", 0, 0);
+	m->add_text_data(data, "foot", "%s%s", 1, 1000);
+	m->add_text_data(data, "min", "%s%s", 0, 0);
 
-	ctools_menu_Show(data);
+	m->show(data);
 	return;
 }
