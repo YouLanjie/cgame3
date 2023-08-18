@@ -1,6 +1,6 @@
 #include "../include/head.h"
 
-extern ctools_menu CT_MENU;
+const extern ctools_menu CT_MENU;
 
 static struct Snake *init();
 static struct Snake *mkFood();
@@ -15,7 +15,7 @@ static struct winsize size;	/* 记录窗口大小 */
 
 void Game()
 {				/* 实现游戏的函数 */
-	ctools_menu *m = &CT_MENU;
+	const ctools_menu *m = &CT_MENU;
 	struct ctools_menu_t *end;
 	m->data_init(&end);
 	m->set_title(end, "游戏结束");
@@ -122,7 +122,7 @@ void Game()
 		case '0':
 			alarm(0);
 			if (pHead != NULL) {
-				m->add_text(end, "结束理由：",
+				m->set_text(end, "结束理由：",
 					    "手动退出",
 					    "按Q或者Esc返回：",
 					    NULL);
@@ -270,7 +270,7 @@ static void runGame(void)
 	short  BORE = 1;    /* 循环判断 */
 	struct Snake  * pLast = pHead,
 		      * pNext = pHead;
-	ctools_menu *m = &CT_MENU;
+	const ctools_menu *m = &CT_MENU;
 	struct ctools_menu_t * end = NULL;
 
 	m->data_init(&end);
@@ -320,7 +320,7 @@ static void runGame(void)
 			Lock = 2;
 			alarm(0);
 			clear();
-			m->add_text(end, "结束理由：",
+			m->set_text(end, "结束理由：",
 				    "让你好好走路你偏不好好走，现在撞墙了吧",
 				    "按Q或者Esc返回：", NULL);
 			m->show(end);
@@ -338,7 +338,7 @@ static void runGame(void)
 				Lock = 2;
 				alarm(0);
 				clear();
-				m->add_text(end, "结束理由：",
+				m->set_text(end, "结束理由：",
 					    "吃错东西了，自己吃自己，自相残杀",
 					    "按Q或者Esc返回：",
 					    NULL);

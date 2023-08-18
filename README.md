@@ -2,13 +2,8 @@
 
 ## 简介
 
-- 这是一个c语言写的小游戏
-- 目前才刚开工，还没有什么内容
-- 开发平台:
-  - [x] Arch Linux
-  - [ ] Ubuntu Linux
-  - [ ] Debian Linux
-  - [ ] Deepin Linux
+- 这是一个c语言写的小游戏(贪吃蛇)
+- 需要Ncurses库
 
 ## 使用
 
