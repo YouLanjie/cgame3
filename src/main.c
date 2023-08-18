@@ -46,18 +46,17 @@ int main()
 
 	signal(SIGINT, stop);
 
-	while (inputContent != 0x1B && inputContent != '0'
-	       && inputContent != 'Q' && inputContent != 'q') {
+	while (inputContent != 0x1B && inputContent != 0) {
 		clear();
 		inputContent = m->show(menu);
 		switch (inputContent) {
-		case '1':
+		case 1:
 			Game();
 			break;
-		case '2':
+		case 2:
 			m->show(help);
 			break;
-		case '3':
+		case 3:
 			Settings();
 			break;
 		default:
